@@ -21,6 +21,19 @@ const saveEditButton = document.getElementById('saveEditButton');
 const closeModalButton = document.getElementById('closeModalButton');
 const searchInput = document.getElementById('searchInput');
 
+// Conexión a la base de datos Neon
+const { Client } = require('pg');
+
+const client = new Client({
+    host: 'TU_HOST',
+    port: 'TU_PORT',
+    user: 'TU_USUARIO',
+    password: 'TU_CONTRASEÑA',
+    database: 'TU_BASE_DE_DATOS'
+});
+
+client.connect();
+
 // Funciones
 function hideCover() {
     document.getElementById('cover').style.display = 'none';
@@ -32,7 +45,7 @@ async function loadCards() {
     if (isSignedIn) {
         cards = await loadFromCloud();
     } else {
-        cards = JSON.parse(localStorage.getItem('cards')) || [];
+        cards = await loadFromDatabase();
     }
     cardContainer.innerHTML = ''; // Limpiar el contenedor antes de cargar
     cards.forEach(card => {
@@ -42,11 +55,22 @@ async function loadCards() {
     updateCategoryTags();
 }
 
+async function loadFromDatabase() {
+    try {
+        const res = await client.query('SELECT * FROM cards');
+        return res.rows;
+    } catch (error) {
+        console.error('Error al cargar desde la base de datos:', error);
+        return [];
+    }
+}
+
 async function saveCards() {
     const cards = Array.from(cardContainer.children).map(cardToObject);
-    localStorage.setItem('cards', JSON.stringify(cards));
-    if (isSignedIn) {
-        await syncToCloud(cards);
+    await client.query('DELETE FROM cards'); // Limpiar la tabla antes de guardar
+    for (const card of cards) {
+        await client.query('INSERT INTO cards (url, name, category, logo, description) VALUES ($1, $2, $3, $4, $5)', 
+        [card.url, card.name, card.category, card.logo, card.description]);
     }
 }
 
@@ -148,7 +172,7 @@ function togglePreview(card) {
 }
 
 // Funciones de autenticación y sincronización
-function onSignIn(googleUser) {
+function onSignIn(googleUser ) {
     isSignedIn = true;
     document.getElementById('googleSignInButton').style.display = 'none';
     document.getElementById('signOutButton').style.display = 'block';
@@ -159,11 +183,11 @@ function onSignIn(googleUser) {
 function signOut() {
     const auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
-        console.log('User signed out.');
+        console.log('User  signed out.');
         isSignedIn = false;
         document.getElementById('googleSignInButton').style.display = 'block';
         document.getElementById('signOutButton').style.display = 'none';
-        loadCards(); // Cargar tarjetas desde localStorage después de cerrar sesión
+        loadCards(); // Cargar tarjetas desde la base de datos después de cerrar sesión
         showNotification('Sesión cerrada', 'info');
     });
 }
@@ -175,7 +199,7 @@ async function syncToCloud(cards) {
         return;
     }
 
-    const accessToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+    const accessToken = gapi.auth2.getAuthInstance().currentUser .get().getAuthResponse().access_token;
     const fileName = 'appview_cards.json';
     const fileContent = JSON.stringify(cards);
 
@@ -223,7 +247,7 @@ async function loadFromCloud() {
         return [];
     }
 
-    const accessToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+    const accessToken = gapi.auth2.getAuthInstance().currentUser .get().getAuthResponse().access_token;
     const fileName = 'appview_cards.json';
 
     try {
@@ -371,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateSigninStatus(isSignedIn) {
     if (isSignedIn) {
-        onSignIn(gapi.auth2.getAuthInstance().currentUser.get());
+        onSignIn(gapi.auth2.getAuthInstance().currentUser .get());
     } else {
         signOut();
     }
