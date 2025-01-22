@@ -24,20 +24,6 @@ function hideCover() {
     document.getElementById('cover').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
 }
-const { Client } = require('pg');
-
-const client = new Client({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-});
-
-client.connect()
-    .then(() => console.log('Conectado a la base de datos'))
-    .catch(err => console.error('Error de conexión', err));
-
 async function loadCards() {
     let cards;
     if (isSignedIn) {
@@ -51,16 +37,6 @@ async function loadCards() {
         categories.add(card.category);
     });
     updateCategoryTags();
-}
-async function saveCardsToDatabase(cards) {
-    const query = 'INSERT INTO cards (url, name, category, logo, description) VALUES ($1, $2, $3, $4, $5)';
-    for (const card of cards) {
-        await client.query(query, [card.url, card.name, card.category, card.logo, card.description]);
-    }
-}
-async function loadCardsFromDatabase() {
-    const res = await client.query('SELECT * FROM cards');
-    return res.rows;
 }
 async function saveCards() {
     const cards = Array.from(cardContainer.children).map(cardToObject);
