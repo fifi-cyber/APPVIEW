@@ -25,11 +25,11 @@ const searchInput = document.getElementById('searchInput');
 const { Client } = require('pg');
 
 const client = new Client({
-    host: 'ep-morning-bush-a4gryl8j-pooler.us-east-1.aws.neon.tech',
-    port:  5432,
-    user: 'neondb_owner',
-    password: 'npg_GKWS4IBrCnh9',
-    database: 'neondb'
+    host: '',
+    port:  ,
+    user: '',
+    password: '',
+    database: ''
 });
 
 client.connect();
