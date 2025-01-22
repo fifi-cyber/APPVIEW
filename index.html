@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APPVIEW - Almacenamiento de Páginas Web</title>
+    
+    <!-- Fonts and Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Essential Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    
+    <!-- Environment Variables -->
+    <script>
+        window.ENV = {
+            API_URL: process.env.NEXT_PUBLIC_API_URL || '/api',
+            DATABASE_URL: process.env.NEXT_PUBLIC_DATABASE_URL,
+        };
+    </script>
+
+    
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="cover" id="cover">
+        <div class="digital-circuit"></div>
+        <h1 class="text-6xl font-bold mb-4">APP<span class="text-green-400">VIEW</span></h1>
+        <p class="mb-8">Organiza tu universo digital con estilo futurista</p>
+        <button onclick="hideCover()" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-all duration-300 transform hover:scale-105">
+            Explorar el Futuro
+        </button>
+    </div>
+
+    <div class="container mx-auto px-4 py-8" id="mainContent" style="display: none;">
+        <h1 class="text-6xl font-bold mb-4 text-center">APP<span class="text-green-400">VIEW</span></h1>
+        <p class="text-xl text-gray-400 mb-8 text-center">Tu portal a un universo de información organizada</p>
+        
+        <div class="input-container flex flex-wrap gap-2 mb-8">
+            <input type="text" id="urlInput" placeholder="Ingresa la URL del portal" 
+                   class="flex-grow p-2 bg-gray-800 border border-gray-700 rounded focus:ring-2 focus:ring-green-400 focus:border-transparent" />
+            <input type="text" id="nameInput" placeholder="Nombre del nodo" 
+                   class="flex-grow p-2 bg-gray-800 border border-gray-700 rounded focus:ring-2 focus:ring-green-400 focus:border-transparent" />
+            <select id="categorySelect" 
+                    class="p-2 bg-gray-800 border border-gray-700 rounded focus:ring-2 focus:ring-green-400 focus:border-transparent">
+                <option value="diseño">Diseño</option>
+                <option value="ia">IA</option>
+                <option value="business">Business</option>
+                <option value="tiendas">Tiendas</option>
+                <option value="school">School</option>
+                <option value="hacker">Hacker</option>
+                <option value="personal">Personal</option>
+            </select>
+            <button id="addButton" 
+                    class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition duration-300 transform hover:scale-105">
+                Agregar Nodo
+            </button>
+        </div>
+
+        <input type="text" id="searchInput" placeholder="Buscar en la matriz..." 
+               class="w-full p-2 mb-4 bg-gray-800 border border-gray-700 rounded focus:ring-2 focus:ring-green-400 focus:border-transparent" />
+        
+        <div id="categoryContainer" class="mb-8"></div>
+        <div id="cardContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-gray-800 p-8 rounded-lg w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-4">Editar Nodo</h2>
+            <input type="text" id="editUrlInput" placeholder="URL del portal" 
+                   class="w-full p-2 mb-4 bg-gray-700 border border-gray-600 rounded focus:ring-2 focus:ring-green-400" />
+            <input type="text" id="editNameInput" placeholder="Nombre del nodo" 
+                   class="w-full p-2 mb-4 bg-gray-700 border border-gray-600 rounded focus:ring-2 focus:ring-green-400" />
+            <textarea id="editDescriptionInput" placeholder="Descripción del nodo" 
+                      class="w-full p-2 mb-4 bg-gray-700 border border-gray-600 rounded focus:ring-2 focus:ring-green-400" 
+                      rows="3"></textarea>
+            <div class="flex gap-2">
+                <button id="saveEditButton" 
+                        class="flex-1 bg-green-500 text-white p-2 rounded hover:bg-green-600 transition duration-300">
+                    Actualizar
+                </button>
+                <button id="closeModalButton" 
+                        class="flex-1 bg-gray-700 text-gray-300 p-2 rounded hover:bg-gray-600 transition duration-300">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="main.js" type="module"></script>
+</body>
+</html>
