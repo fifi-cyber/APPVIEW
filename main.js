@@ -52,6 +52,16 @@ async function loadCards() {
     });
     updateCategoryTags();
 }
+async function saveCardsToDatabase(cards) {
+    const query = 'INSERT INTO cards (url, name, category, logo, description) VALUES ($1, $2, $3, $4, $5)';
+    for (const card of cards) {
+        await client.query(query, [card.url, card.name, card.category, card.logo, card.description]);
+    }
+}
+async function loadCardsFromDatabase() {
+    const res = await client.query('SELECT * FROM cards');
+    return res.rows;
+}
 async function saveCards() {
     const cards = Array.from(cardContainer.children).map(cardToObject);
     localStorage.setItem('cards', JSON.stringify(cards));
